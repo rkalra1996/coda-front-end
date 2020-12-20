@@ -9,6 +9,7 @@
     }
     .loading-container {
         float: left;
+        position: relative;
         p {
             display: inline;
         }
@@ -16,8 +17,13 @@
     .button-container {
         text-align: right;
         padding: 20px 0;
-        button:nth-child(1) {
-            margin-right: 10px;
-        }
     }
 }
+
+mat-form-field {
+    float: left;
+ }
+
+ .mr-20 {
+     margin-right: 20px;
+ }

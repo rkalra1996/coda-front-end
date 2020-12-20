@@ -5,7 +5,12 @@ import { Socket } from 'ngx-socket-io';
 const APIS = {
   endpoint: 'https://pacific-stream-42469.herokuapp.com/leaderboard',
   updateMatch: () => `${APIS.endpoint}/update`,
-  getLBData: (page: number, size: number) => `${APIS.endpoint}?page=${page}&size=${size}`
+  getLBData: (page: number, size: number, query: string) => {
+    if (query) {
+      return `${APIS.endpoint}?page=${page}&size=${size}&q=${query}`
+    }
+    return `${APIS.endpoint}?page=${page}&size=${size}`
+  }
 }
 
 @Injectable({
@@ -19,8 +24,8 @@ export class LeaderboarUtilsService {
     return this.socket.fromEvent('leaderboard-update')
   }
 
-  getAllData(page = 0, size = 10) {
-    return this.http.get(APIS.getLBData(page,size)).toPromise();
+  getAllData(page = 0, size = 10, query= '') {
+    return this.http.get(APIS.getLBData(page,size, query)).toPromise();
   }
 
   prepareTeamUpdationData(data: any) {

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { LeaderboarUtilsService } from './services/leaderboar-utils.service';
@@ -7,8 +7,8 @@ import { AddTeamComponent } from './components/add-team/add-team.component';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatDialog } from '@angular/material/dialog';
 import { MatchDialogComponent } from './components/match-dialog/match-dialog.component';
-import { of, Subscription } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { fromEvent, of, Subscription } from 'rxjs';
+import { catchError, debounceTime, map, startWith } from 'rxjs/operators';
 import { ILeaderboard, ILeaderboardResponse } from './interfaces/leaderboard.interface';
 import {MatSnackBar} from '@angular/material/snack-bar';
 
@@ -17,7 +17,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   tableData: MatTableDataSource<ILeaderboard>;
   displayedColumns = ['select', 'team_name', 'wins', 'losses', 'ties', 'score']
   fetching = null;
@@ -27,6 +27,7 @@ export class AppComponent implements OnInit {
   totalDataCount = 0;
   socketSub$: Subscription | null = null
   pageFetch = null
+  input$: Subscription | null = null
   selection = new SelectionModel<ILeaderboard>(true, []);
   constructor(
     private readonly leaderboardUtilSrvc: LeaderboarUtilsService, 
@@ -37,10 +38,11 @@ export class AppComponent implements OnInit {
 
   @ViewChild(MatTable) table: MatTable<ILeaderboard>;
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild('input') input:ElementRef;
 
-  async updateTable(page: number, size: number) {
+  async updateTable(page: number, size: number, query = '') {
     this.pageFetch = 'fetching'
-    const rendered = await this.renderTable(page, size)
+    const rendered = await this.renderTable(page, size, query);
     if (rendered) {
       this.pageFetch = 'done'
       this.table.renderRows();
@@ -61,13 +63,18 @@ export class AppComponent implements OnInit {
     }
   }
 
-  async renderTable(page = 0, size = 10) {
+  async renderTable(page = 0, size = 10, query = '') {
     try {
-      const response = await this.leaderboardUtilSrvc.getAllData(page, size) as ILeaderboardResponse;
+      const response = await this.leaderboardUtilSrvc.getAllData(page, size, query) as ILeaderboardResponse;
       const dataForTable = new MatTableDataSource(response.data.data);
       this.renderTableData(response, dataForTable);
       window.setTimeout(()=>{
         this.tableData.sort = this.sort;
+        if (!this.input$) {
+          this.input$ = this.subscribeToInputEl().subscribe(data => {
+            this.applyFilter(data)
+          })
+        }
       })
       if (!this.socketSub$) {
         this.socketSub$ = this.leaderboardUtilSrvc.leaderboardSocket.subscribe((_: any)=> this.updateTable(this.currentPage, this.pageSize))
@@ -77,6 +84,18 @@ export class AppComponent implements OnInit {
       console.error('An Error occured while reading details', err);
       return await false;
     }
+  }
+
+  applyFilter(search: string) {
+    this.tableData.filter = search.trim().toLowerCase();
+  }
+
+  subscribeToInputEl() {
+    return fromEvent(this.input.nativeElement, 'keyup').pipe(
+      map((event: any) => event.target.value),
+      startWith(''),
+      debounceTime(500),
+    );
   }
 
   renderTableData(originalResponse: any, matTable: any) {
