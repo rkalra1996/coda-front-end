@@ -19,7 +19,7 @@
       <div class="loading-container" *ngIf="pageFetch === 'fetching'">
         <p>Retrieving Data set...</p>
       </div>
-      <mat-form-field>
+      <mat-form-field *ngIf="pageFetch !== 'fetching'">
         <mat-label>Search from results</mat-label>
         <input matInput placeholder="Ex. ium" #input>
       </mat-form-field>
