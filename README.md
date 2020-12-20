@@ -1,4 +1,4 @@
-# Coda Frontend Challenge [![Netlify Status](https://api.netlify.com/api/v1/badges/e16543eb-992d-4f19-a0d0-a633f7fc05c5/deploy-status)](https://coda-front-end.netlify.app/)
+# Coda FullStack Hiring Challenge [![Netlify Status](https://api.netlify.com/api/v1/badges/e16543eb-992d-4f19-a0d0-a633f7fc05c5/deploy-status)](https://coda-front-end.netlify.app/)
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.0.7.
 
