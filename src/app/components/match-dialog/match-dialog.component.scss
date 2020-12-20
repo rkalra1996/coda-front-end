@@ -1,0 +1,28 @@
+.parent-container {
+    display: flex;
+    flex-direction: column;
+    .body {
+        font-size: 2rem;
+        margin: 20px;
+        display: flex;
+        justify-content: space-evenly;
+        span {
+            line-height: 2;
+        }
+    }
+    .footer {
+        height: 100px;
+        margin-top: 40px;
+        display: flex;
+        align-items: flex-end;
+        flex-direction: row;
+        .button-wrapper {
+            display: flex;
+            justify-content: space-evenly;
+            width: 100%;
+            button {
+                height: 50px;
+            }
+        }
+    }
+}

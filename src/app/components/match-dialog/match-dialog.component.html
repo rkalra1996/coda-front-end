@@ -1,0 +1,14 @@
+<div class="parent-container">
+    <div class="body">
+        <span>{{team1.team_name}}</span> 
+        <span>VS</span>
+        <span>{{team2.team_name}}</span>
+    </div>
+    <div class="footer">
+        <div class="button-wrapper">
+            <button mat-raised-button color="primary" [mat-dialog-close]="{wins: [team1], lose: [team2], tie: null}">{{team1.team_name}} Wins</button>
+            <button mat-raised-button color="accent" [mat-dialog-close]="{wins: null, lose: null, tie: [team1, team2]}">Tie</button>
+            <button mat-raised-button color="primary" [mat-dialog-close]="{wins: [team2], lose: [team1], tie: null}">{{team2.team_name}} Wins</button>
+        </div>
+    </div>
+</div>

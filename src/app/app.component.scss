@@ -1,0 +1,23 @@
+.container {
+    padding-top: 50px;
+}
+.table-container {
+    width: 90%;
+    margin: auto;
+    table {
+        width: 100%;
+    }
+    .loading-container {
+        float: left;
+        p {
+            display: inline;
+        }
+    }
+    .button-container {
+        text-align: right;
+        padding: 20px 0;
+        button:nth-child(1) {
+            margin-right: 10px;
+        }
+    }
+}

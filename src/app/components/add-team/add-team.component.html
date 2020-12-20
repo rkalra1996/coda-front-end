@@ -1,0 +1,15 @@
+<div class="field-container">
+    <mat-form-field appearance="outline">
+        <mat-label>Team Name</mat-label>
+        <input matInput placeholder="Add team name" [(ngModel)]="teamName">
+        <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+        <mat-hint>ex: Black Eyed Peas</mat-hint>
+    </mat-form-field>
+    <div class="button-container">
+        <button [disabled]="sending" mat-raised-button color="primary" (click)="createTeam()">
+            <mat-icon *ngIf="sending">
+                <mat-spinner color="accent"  diameter="20"></mat-spinner>
+            </mat-icon>
+            Add</button>
+    </div>
+</div>
