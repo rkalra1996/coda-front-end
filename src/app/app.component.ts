@@ -10,7 +10,7 @@ import { MatchDialogComponent } from './components/match-dialog/match-dialog.com
 import { fromEvent, of, Subscription } from 'rxjs';
 import { catchError, debounceTime, map, startWith } from 'rxjs/operators';
 import { ILeaderboard, ILeaderboardResponse } from './interfaces/leaderboard.interface';
-import {MatSnackBar} from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-root',
@@ -19,18 +19,19 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 })
 export class AppComponent implements OnInit, OnDestroy {
   tableData: MatTableDataSource<ILeaderboard>;
-  displayedColumns = ['select', 'team_name', 'wins', 'losses', 'ties', 'score']
+  displayedColumns = ['select', 'team_name', 'wins', 'losses', 'ties', 'score'];
   fetching = null;
   canMatch = false;
   currentPage = 0;
   pageSize = 0;
   totalDataCount = 0;
-  socketSub$: Subscription | null = null
-  pageFetch = null
-  input$: Subscription | null = null
+  socketSub$: Subscription | null = null;
+  pageFetch = null;
+  input$: Subscription | null = null;
   selection = new SelectionModel<ILeaderboard>(true, []);
   constructor(
-    private readonly leaderboardUtilSrvc: LeaderboarUtilsService, 
+    private readonly leaderboardUtilSrvc: LeaderboarUtilsService,
+    // tslint:disable-next-line: variable-name
     private _bottomSheet: MatBottomSheet,
     public dialog: MatDialog,
     private readonly snackbar: MatSnackBar,
@@ -38,7 +39,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   @ViewChild(MatTable) table: MatTable<ILeaderboard>;
   @ViewChild(MatSort) sort: MatSort;
-  @ViewChild('input') input:ElementRef;
+  @ViewChild('input') input: ElementRef;
 
   async updateTable(page: number, size: number, query = '') {
     this.pageFetch = 'fetching'
@@ -47,19 +48,19 @@ export class AppComponent implements OnInit, OnDestroy {
       this.pageFetch = 'done'
       this.table.renderRows();
     } else {
-      this.pageFetch = 'error'
-      this.fetching = 'error'
+      this.pageFetch = 'error';
+      this.fetching = 'error';
     }
   }
 
   verifySelection(event: any, row: any) {
     if (event) {
-      this.selection.toggle(row)
+      this.selection.toggle(row);
     }
-    if (this.selection.selected.length == 2) {
-      this.canMatch = true
+    if (this.selection.selected.length === 2) {
+      this.canMatch = true;
     } else {
-      this.canMatch = false
+      this.canMatch = false;
     }
   }
 
@@ -68,16 +69,17 @@ export class AppComponent implements OnInit, OnDestroy {
       const response = await this.leaderboardUtilSrvc.getAllData(page, size, query) as ILeaderboardResponse;
       const dataForTable = new MatTableDataSource(response.data.data);
       this.renderTableData(response, dataForTable);
-      window.setTimeout(()=>{
+      window.setTimeout(() => {
         this.tableData.sort = this.sort;
         if (!this.input$) {
           this.input$ = this.subscribeToInputEl().subscribe(data => {
-            this.applyFilter(data)
-          })
+            this.applyFilter(data);
+          });
         }
-      })
+      });
       if (!this.socketSub$) {
-        this.socketSub$ = this.leaderboardUtilSrvc.leaderboardSocket.subscribe((_: any)=> this.updateTable(this.currentPage, this.pageSize))
+        // tslint:disable-next-line: max-line-length
+        this.socketSub$ = this.leaderboardUtilSrvc.leaderboardSocket.subscribe((_: any)=> this.updateTable(this.currentPage, this.pageSize));
       }
       return await true;
     } catch(err) {
@@ -145,12 +147,23 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   fetchData(event: any) {
-    this.updateTable(event.pageIndex, event.pageSize)
+    this.updateTable(event.pageIndex, event.pageSize);
   }
 
   ngOnDestroy() {
     if (this.socketSub$) {
       this.socketSub$.unsubscribe();
     }
+  }
+
+  isChecked(row: any) {
+    const selectedIdx = this.selection.selected.findIndex((selectedRow: ILeaderboard) => {
+      return selectedRow._id === row._id;
+    } );
+    if (selectedIdx !== -1) {
+      return true;
+    }
+    return false;
+    // return this.selection.isSelected(row);
   }
 }
